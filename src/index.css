@@ -1,0 +1,9 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body{
+  font-family: 'Montagu Slab', serif;
+  background: linear-gradient(to bottom, #3b3b3b, #1e1e1e);
+}
