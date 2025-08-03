@@ -1,0 +1,30 @@
+.cajaColor{
+    width: 400px;
+    height: 200px;
+    border-radius: 15px;
+    border: 2px solid #3e3e3eff;
+}
+.info{
+    display: grid;
+    margin-top: 15px;
+    grid-template-columns: auto 1fr;
+    border-radius: 15px;
+}
+.info button{
+    background-color: transparent;
+    border: none;
+    width: 16px;
+    cursor: pointer;
+}
+.info div{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    gap: 5px;
+}
+.circle{
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}

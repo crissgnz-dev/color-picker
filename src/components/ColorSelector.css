@@ -1,0 +1,39 @@
+.colorPicker{
+    position: relative;
+    height: 300px;
+    width: 300px;
+    border: 1px solid #333;
+    border-radius: 10px;
+    background: linear-gradient(to top, black, transparent), linear-gradient(to right, white, transparent);
+    background-color: hsl(0, 100%, 50%);
+}
+.colorPicker .pickerSelector{
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    background-color: transparent;
+}
+.colorBar{
+    position: relative;
+    background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
+    margin-top: 15px;
+    border: 2px solid white;
+    border-radius: 10px;
+    height: 40px;
+    width: 300px;
+}
+.colorBar .pickerSelector{
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 6px;
+    height: 36px;
+    border: 1px solid #555;
+    border-radius: 3px;
+    background-color: white;
+    pointer-events: none;
+}
