@@ -22,10 +22,10 @@ function App() {
 
         <section
           style={{
-            filter: `drop-shadow(2px 2px 1px ${color.hex})`
+            filter: `drop-shadow(2px 2px 2px ${color.hex})`
           }}
         >
-          <img src={Logo} alt="logo" className='logo'/>
+          <h1>Color Picker</h1>
         </section>
 
         <div className='container'

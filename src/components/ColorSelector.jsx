@@ -1,20 +1,21 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import "./ColorSelector.css"
 import { hsvToRgb, rgbToHex } from "../utils/colorConversions.js";
+import { FaEyeDropper } from "react-icons/fa6";
 
 export default function ColorSelector({ onColorChange }) {
 
     const [hsv, setHsv] = useState({ h: 0, s: 100, v: 100});
+    
+    const rgb = hsvToRgb(hsv.h, hsv.s, hsv.v);
+
+    const hex = rgbToHex(rgb.r, rgb.g, rgb.b)
 
     const colorPickerRef = useRef(null);
     const colorBarRef = useRef(null);
 
     const [isDraggingPicker, setIsDraggingPicker] = useState(false)
     const [isDraggingBar, setIsDraggingBar] = useState(false)
-
-    const rgb = hsvToRgb(hsv.h, hsv.s, hsv.v);
-
-    const hex = rgbToHex(rgb.r, rgb.g, rgb.b)
 
     const lastEmittedColorRef = useRef({ hsv, rgb, hex })
 
@@ -138,6 +139,7 @@ export default function ColorSelector({ onColorChange }) {
              >
                 <div className="pickerSelector" style={getBarHandlePosition()}></div>
             </div>
+            <button className='dropper' ><FaEyeDropper color={hex} size={16}/></button>
         </div>
     )
 }
