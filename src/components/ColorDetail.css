@@ -24,6 +24,15 @@
     padding: 10px;
     gap: 5px;
 }
+.info div input {
+    font-family: 'Montagu Slab', serif;
+    background-color: transparent;
+    width: 100%;
+    border: none;
+    outline: 0 none;
+    color: #dbdbdb;
+    font-weight: 400;
+}
 .circle{
     width: 16px;
     height: 16px;
