@@ -1,14 +1,10 @@
-// ColorSelector.jsx (Usando react-colorful)
-
-import React, { useCallback } from "react";
+import React, { useCallback, memo } from "react";
 import { HexColorPicker } from "react-colorful"; // Componente principal para el selector de color
 import useEyeDropper from "use-eye-dropper";
 import { FaEyeDropper } from "react-icons/fa6";
 import "./ColorSelector.css";
+import { colord } from "colord";
 
-import { hexToHsv, hsvToRgb } from "../utils/colorConversions.js";
-
-// Componente para el EyeDropper (se mantiene tu lógica)
 function EyeDropperButton({ hex, onChange }) {
   const { open, isSupported } = useEyeDropper();
 
@@ -28,34 +24,45 @@ function EyeDropperButton({ hex, onChange }) {
   }, [open, isSupported, onChange]);
 
   return (
-    <button
-      className="dropper"
-      onClick={handleEyeDropper}
-      disabled={!isSupported()}>
-      <FaEyeDropper color={hex} size={16} />
-    </button>
+    <div
+      style={{
+        width: "100%",
+        display: "flex",
+        justifyContent: "end",
+      }}>
+      <button
+        className="dropper"
+        onClick={handleEyeDropper}
+        disabled={!isSupported()}>
+        <FaEyeDropper color={hex} size={18} />
+      </button>
+    </div>
   );
 }
 
 export default function ColorSelector({ hex, onChange }) {
-  // Maneja el cambio de color desde el picker o el EyeDropper
   const handleColorChange = useCallback(
     (newHex) => {
-      // 1. Convertir HEX (el output del picker) al formato HSV (0-100)
-      const newHsv = hexToHsv(newHex);
+      // 1. CREAR UNA INSTANCIA CON EL HEX DEL PICKER
+      const colorInstance = colord(newHex);
 
-      // 2. Convertir a RGB
-      const newRgb = hsvToRgb(newHsv.h, newHsv.s, newHsv.v);
+      // 2. EXTRAER VALORES Y REDONDEAR SOLO LO NECESARIO PARA TU ESTADO
+      const hsv = colorInstance.toHsv();
+      const rgb = colorInstance.toRgb();
+      const finalHex = colorInstance.toHex().toUpperCase();
 
-      // 3. Notificar a App.jsx con el objeto completo
+      // 3. Notificar a App.jsx con el objeto más estable posible
       onChange({
-        hsv: newHsv, // {h: 0-360, s: 0-100, v: 0-100}
-        rgb: {
-          r: Math.round(newRgb.r),
-          g: Math.round(newRgb.g),
-          b: Math.round(newRgb.b),
+        // Redondeamos HSV para que el chequeo en App.jsx sea determinista
+        hsv: {
+          h: Math.round(hsv.h),
+          s: Math.round(hsv.s),
+          v: Math.round(hsv.v),
         },
-        hex: newHex.toUpperCase(),
+        // RGB de colord ya son enteros
+        rgb: { r: rgb.r, g: rgb.g, b: rgb.b },
+        // HEX de colord es la representación más precisa de estos valores
+        hex: finalHex,
       });
     },
     [onChange]
@@ -66,7 +73,7 @@ export default function ColorSelector({ hex, onChange }) {
       <HexColorPicker
         color={hex}
         onChange={handleColorChange}
-        style={{ width: 300, height: 315 }}
+        style={{ width: "100%", height: 300 }}
       />
       <EyeDropperButton hex={hex} onChange={handleColorChange} />
     </div>
