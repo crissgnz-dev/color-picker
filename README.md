@@ -1,12 +1,48 @@
-# React + Vite
+# 🌈 Color Picker - Conversor y Selector Digital
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Desarrollo de una herramienta interactiva web enfocada en optimizar el flujo de trabajo de diseñadores y desarrolladores, permitiendo la selección visual de colores y su conversión instantánea a los formatos estándares de la industria (HEX, RGB, HSV).
 
-Currently, two official plugins are available:
+## 🎯 Objetivo del Proyecto
+Este proyecto nació de la necesidad común de tener una solución centralizada y rápida para trabajar con códigos de color en entornos de desarrollo web.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+El objetivo principal fue:
 
-## Expanding the ESLint configuration
+Diseñar una interfaz de usuario fluida y eficiente que integre un selector de color moderno y la funcionalidad de Cuentagotas (EyeDropper), garantizando que el color seleccionado se muestre y sea copiable en múltiples modelos de color (HEX, RGB, HSV) simultáneamente. El proyecto prioriza la eficiencia, utilizando librerías ligeras como react-colorful.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🛠️ Tecnologías Utilizadas
+
+| Categoría | Tecnología | Propósito Específico |
+| :--- | :--- | :--- |
+| **Framework** | **React.js** | Estructura de componentes y manejo del estado global. |
+| **Estilos** | **HTML & CSS** | Estructura y diseño de la interfaz de usuario (UI). |
+| **Color Picker** | `react-colorful` | Selector de color minimalista, ligero y eficiente. |
+| **Cuentagotas** | `use-eye-dropper` | Implementación del API EyeDropper para la selección externa. |
+| **Iconografía** | `react-icons` | Iconos para los botones de Copiar y Cuentagotas. |
+
+## 🚀 Instalación y Ejecución Local
+
+### Prerrequisitos
+
+* Node.js (versión 16+)
+* Un gestor de paquetes (npm o yarn)
+
+### Pasos
+
+1.  **Clona el repositorio:**
+    ```bash
+    git clone https://github.com/crissgnz-dev/color-picker.git
+    ```
+2.  **Navega al directorio del proyecto:**
+    ```bash
+    cd color-picker
+    ```
+3.  **Instala las dependencias:**
+    ```bash
+    npm install
+    ```
+4.  **Inicia la aplicación (ejecutando el entorno de React):**
+    ```bash
+    npm run dev
+    ```
+
+---
