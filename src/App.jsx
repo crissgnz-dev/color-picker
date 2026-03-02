@@ -1,34 +1,12 @@
-// App.jsx (VERSIÓN CORREGIDA PARA ELIMINAR EL BUCLE)
-
 import "./App.css";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import ColorDetail from "./components/ColorDetail.jsx";
 import ColorSelector from "./components/ColorSelector.jsx";
 
 // FUNCIÓN DE SEGURIDAD CRÍTICA: Compara los valores de color para evitar re-renderizados innecesarios.
 const areColorObjectsEqual = (c1, c2) => {
   if (!c1 || !c2) return false;
-
-  // 1. Comparar HEX
-  if (c1.hex !== c2.hex) return false;
-
-  // 2. Comparar RGB
-  if (c1.rgb.r !== c2.rgb.r || c1.rgb.g !== c2.rgb.g || c1.rgb.b !== c2.rgb.b)
-    return false;
-
-  // 3. Comparar HSV (Usamos Math.round para mayor seguridad, aunque Colord y ColorSelector
-  // deberían entregarlos ya redondeados)
-  const hsv1 = c1.hsv;
-  const hsv2 = c2.hsv;
-  if (
-    Math.round(hsv1.h) !== Math.round(hsv2.h) ||
-    Math.round(hsv1.s) !== Math.round(hsv2.s) ||
-    Math.round(hsv1.v) !== Math.round(hsv2.v)
-  )
-    return false;
-
-  // Si todos los valores numéricos son idénticos, consideramos que los objetos son iguales.
-  return true;
+  return c1.hex === c2.hex;
 };
 
 function App() {
@@ -38,45 +16,52 @@ function App() {
     hex: "#FF0000",
   });
 
+  // Sincronizar el color seleccionado con las variables CSS globales
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--accent-color", color.hex);
+    root.style.setProperty("--accent-rgb", `${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}`);
+  }, [color]);
+
   const handleColorChange = useCallback((newColor) => {
     setColor((oldColor) => {
+      // Si recibimos un string HEX directamente (del dropper o similar)
+      if (typeof newColor === "string") {
+        return oldColor; // Deberíamos normalizarlo si fuera el caso, pero ColorSelector ya manda objetos
+      }
+
       if (areColorObjectsEqual(oldColor, newColor)) {
-        return oldColor; // 🛑 Rompe el ciclo
+        return oldColor;
       }
       return newColor;
     });
   }, []);
 
   return (
-    <>
-      <main className="mainApp">
-        <section
-          style={{
-            filter: `drop-shadow(2px 2px 2px ${color.hex})`,
-          }}>
-          <h1>Color Picker</h1>
-        </section>
+    <main className="main-wrapper">
+      <div className="background-glow" />
 
-        <div
-          className="container"
-          style={{
-            border: "1px solid " + color.hex,
-            padding: "40px",
-            borderRadius: "15px",
-            filter: "drop-shadow(0px 0px 1px #aaa)",
-          }}>
-          <ColorDetail color={color} onColorChange={handleColorChange} />
-          <ColorSelector hex={color.hex} onChange={handleColorChange} />
+      <header className="hero-section">
+        <h1 className="main-title">
+          Color <span className="accent-text">Picker</span>
+        </h1>
+      </header>
+
+
+      <div className="glass-container">
+        <div className="content-grid">
+          <section className="detail-panel">
+            <ColorDetail color={color} onColorChange={handleColorChange} />
+          </section>
+
+          <section className="selector-panel">
+            <ColorSelector hex={color.hex} onChange={handleColorChange} />
+          </section>
         </div>
-        {/* <a
-          href="https://github.com/crissgnz-dev"
-          target="_blank"
-          className="github">
-          @crissgnz-dev
-        </a> */}
-      </main>
-    </>
+      </div>
+    </main>
   );
 }
 
 export default App;
+

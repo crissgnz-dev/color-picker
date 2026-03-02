@@ -17,18 +17,10 @@ function ColorDetail({ color, onColorChange }) {
 
   const getInputValue = useCallback(
     (type) => {
-      // Si el usuario está editando, mostramos el valor local
-      if (editingInput === type) {
-        return inputValue;
-      }
-
-      // Si no, mostramos el valor de la prop (estado global)
+      if (editingInput === type) return inputValue;
       if (type === "hex") return color.hex;
-      if (type === "rgb")
-        return `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})`;
-      if (type === "hsv")
-        return `hsv(${displayHsv.h}, ${displayHsv.s}%, ${displayHsv.v}%)`;
-
+      if (type === "rgb") return `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})`;
+      if (type === "hsv") return `hsv(${displayHsv.h}, ${displayHsv.s}%, ${displayHsv.v}%)`;
       return "";
     },
     [editingInput, inputValue, color, displayHsv]
@@ -36,74 +28,25 @@ function ColorDetail({ color, onColorChange }) {
 
   const emitColorChange = (colorString) => {
     const colorInstance = colord(colorString);
-    if (!colorInstance.isValid()) {
-      return;
-    }
+    if (!colorInstance.isValid()) return;
 
-    // Utiliza colord para obtener los valores estables
     const hsv = colorInstance.toHsv();
     const rgb = colorInstance.toRgb();
 
-    const colorDataForApp = {
+    onColorChange({
       hsv: { h: Math.round(hsv.h), s: Math.round(hsv.s), v: Math.round(hsv.v) },
       rgb: { r: rgb.r, g: rgb.g, b: rgb.b },
       hex: colorInstance.toHex().toUpperCase(),
-    };
-
-    onColorChange(colorDataForApp);
-    // ... (resetear estados locales)
+    });
   };
 
-  // 🔴 NUEVOS HANDLERS UNIFICADOS
   const handleChange = (e, type, validatorFn, formatFn) => {
     const value = e.target.value;
-
     setEditingInput(type);
     setInputValue(value);
-
-    // Si el valor es válido, lo emitimos
     if (validatorFn(value)) {
-      const colorString = formatFn ? formatFn(value) : value;
-      emitColorChange(colorString);
+      emitColorChange(formatFn ? formatFn(value) : value);
     }
-  };
-
-  const handleHexInputChange = (e) => {
-    const value = e.target.value.toUpperCase();
-    handleChange(
-      e,
-      "hex",
-      (v) => /^#?([0-9A-F]{3}){1,2}$/i.test(v), // Validación HEX simple
-      (v) => v
-    );
-  };
-
-  const handleRgbInputChange = (e) => {
-    const value = e.target.value;
-    const cleanValue = value.replace(/[^0-9,\s]/g, "");
-
-    handleChange(
-      e,
-      "rgb",
-      (v) => cleanValue.split(",").length === 3, // Validación de 3 números
-      (v) =>
-        `rgb(${cleanValue
-          .split(",")
-          .map((p) => parseInt(p.trim()))
-          .join(",")})` // Formatea a string RGB
-    );
-  };
-
-  const handleHsvInputChange = (e) => {
-    const value = e.target.value;
-    const cleanValue = value.replace(/[^0-9,.\s]/g, "");
-
-    handleChange(
-      e,
-      "hsv",
-      (v) => cleanValue.split(",").length === 3, // Validación de 3 números
-      (v) => `hsv(${cleanValue.split(",").join(",")})` // Formatea a string HSV
-    );
   };
 
   const handleCopy = useCallback(async (textToCopy) => {
@@ -114,87 +57,68 @@ function ColorDetail({ color, onColorChange }) {
     }
   }, []);
 
-  const rgbStringCopy = `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})`;
-  const hsvStringCopy = `hsv(${displayHsv.h}, ${displayHsv.s}%, ${displayHsv.v}%)`;
+  const renderInputGroup = (label, type, validator, formatter) => (
+    <div className="input-group">
+      <div className="label-cell">
+        <div className="status-dot" />
+        <p>{label}</p>
+      </div>
+      <div className="input-cell">
+        <input
+          type="text"
+          spellCheck="false"
+          value={getInputValue(type)}
+          onChange={(e) => handleChange(e, type, validator, formatter)}
+          onBlur={() => {
+            setEditingInput(null);
+            setInputValue("");
+          }}
+        />
+        <button
+          className="copy-button"
+          onClick={() => handleCopy(getInputValue(type))}
+          title={`Copy ${label}`}
+        >
+          <FaRegCopy color="var(--accent-color)" size={16} />
+        </button>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="colorInfo">
+    <div className="color-info">
       <div
-        className="cajaColor"
-        style={{
-          backgroundColor: color.hex,
-        }}
+        className="color-preview-box"
+        style={{ backgroundColor: color.hex }}
+        onClick={() => handleCopy(color.hex)}
+        title="Click to copy HEX"
       />
 
-      <div className="colorData">
-        {/* --- HEX --- */}
-        <div className="info" style={{ border: "1px solid " + color.hex }}>
-          <div>
-            <div className="circle" style={{ backgroundColor: color.hex }} />
-            <p>HEX</p>
-          </div>
-          <div style={{ borderLeft: "1px solid " + color.hex }}>
-            <input
-              type="text"
-              value={getInputValue("hex")} // 🔴 USAR EL GETTER
-              onChange={handleHexInputChange}
-              onBlur={() => {
-                setEditingInput(null);
-                setInputValue("");
-              }} // 🔴 LIMPIAR ESTADO AL SALIR
-            />
-            <button onClick={() => handleCopy(color.hex)}>
-              <FaRegCopy color={color.hex} size={16} />
-            </button>
-          </div>
-        </div>
+      <div className="color-data-grid">
+        {renderInputGroup(
+          "HEX",
+          "hex",
+          (v) => /^#?([0-9A-F]{3}){1,2}$/i.test(v),
+          (v) => (v.startsWith("#") ? v : `#${v}`)
+        )}
 
-        {/* --- RGB --- */}
-        <div className="info" style={{ border: "1px solid " + color.hex }}>
-          <div>
-            <div className="circle" style={{ backgroundColor: color.hex }} />
-            <p>RGB</p>
-          </div>
-          <div style={{ borderLeft: "1px solid " + color.hex }}>
-            <input
-              type="text"
-              value={getInputValue("rgb")} // 🔴 USAR EL GETTER
-              onChange={handleRgbInputChange}
-              onBlur={() => {
-                setEditingInput(null);
-                setInputValue("");
-              }} // 🔴 LIMPIAR ESTADO AL SALIR
-            />
-            <button onClick={() => handleCopy(rgbStringCopy)}>
-              <FaRegCopy color={color.hex} size={16} />
-            </button>
-          </div>
-        </div>
+        {renderInputGroup(
+          "RGB",
+          "rgb",
+          (v) => v.split(",").length === 3,
+          (v) => v.includes("rgb") ? v : `rgb(${v})`
+        )}
 
-        {/* --- HSV --- */}
-        <div className="info" style={{ border: "1px solid " + color.hex }}>
-          <div>
-            <div className="circle" style={{ backgroundColor: color.hex }} />
-            <p>HSV</p>
-          </div>
-          <div style={{ borderLeft: "1px solid " + color.hex }}>
-            <input
-              type="text"
-              value={getInputValue("hsv")} // 🔴 USAR EL GETTER
-              onChange={handleHsvInputChange}
-              onBlur={() => {
-                setEditingInput(null);
-                setInputValue("");
-              }} // 🔴 LIMPIAR ESTADO AL SALIR
-            />
-            <button onClick={() => handleCopy(hsvStringCopy)}>
-              <FaRegCopy color={color.hex} size={16} />
-            </button>
-          </div>
-        </div>
+        {renderInputGroup(
+          "HSV",
+          "hsv",
+          (v) => v.split(",").length === 3,
+          (v) => v.includes("hsv") ? v : `hsv(${v})`
+        )}
       </div>
     </div>
   );
 }
 
 export default React.memo(ColorDetail);
+
